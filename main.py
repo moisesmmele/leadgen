@@ -14,9 +14,7 @@ auth_key = os.environ.get('DATAFORSEO_API_KEY')
 if auth_key is None:
     print("API_KEY environment variable is not set.")
 else:
-    # Use the API key in your application
     print("Using API key:", auth_key)
-    # Now you can use `api_key` in your API requests or wherever it's needed
 
 
 headers = {
@@ -58,7 +56,6 @@ cnpj = mysql.connector.connect(
 
 cursor = cnpj.cursor()
 
-# Step 2: Execute query to retrieve table
 query = f"""
 SELECT *
 FROM empresas
@@ -137,7 +134,6 @@ print("Removendo colunas duplicadas...")
 columns_to_drop = ['cnpj_base_1', 'cnpj_base_2', 'situacao_cadstral_6', 'motivo_situacao_cadastral_7', 'natureza_juridica_8', 'codigo_natureza_juridica_10', 'qualificacao_responsavel_11', 'porte_13', 'ente_federativo_14', 'nome_da_cidade_no_exterior_21', 'pais_22', 'situuacao_especial_28', 'data_situacao_especial_29', 'data_entrada_simples_38', 'data_exclusao_simples_39', 'data_entrada_mei_41', 'data_exclusao_mei_42', 'codigo_municipio_23', 'municipio_24']
 cnpj_df = cnpj_df.drop(columns=columns_to_drop)
 
-# Validate phone numbers and websites
 phone_numbers = []
 has_websites = []
 valida_info = input("Deseja validar informações? (S ou N): ")
@@ -187,5 +183,4 @@ if not limite:
 
 cnpj_df.to_excel(f"output/{uf}_{municipio}_{cnae}_{limite}_{stamp}.xlsx", index=True)
 
-# Don't forget to close the database connection!
 cnpj.close()
