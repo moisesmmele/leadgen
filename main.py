@@ -2,7 +2,6 @@ import pandas as pd
 import mysql.connector
 import datetime
 import sys
-import getpass
 import requests
 import json
 import os
