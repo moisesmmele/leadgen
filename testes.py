@@ -27,7 +27,7 @@ def get_data(keyword):
     return data
 
 
-json_data = get_data("JV&F ESTACIONAMENTO").json()
+json_data = get_data("DELICIAS PARAISO").json()
 
 
 '''phone = json_data["tasks"][0]["result"][0]["items"][0]["phone"]

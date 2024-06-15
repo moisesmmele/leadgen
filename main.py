@@ -204,30 +204,21 @@ if valida_info == "S":
             "language_code": "pt-BR",
         }
         response = requests.post(api_url, headers=headers, json=[payload_dict])
+
         if response.status_code == 200:
-            try:
-                data = response.json()
-                if data is not None:
-                    try:
-                        phone_number = data["tasks"][0]["result"][0]["items"][0]["phone"]
-                        website_url = data["tasks"][0]["result"][0]["items"][0]["url"]
-                        print(phone_number)
-                        print(website_url)
-                        phone_numbers.append(phone_number)
-                        websites.append(website_url)
-                    except (KeyError, IndexError) as e:
-                        print(f"Error accessing data structure: {e}")
-                        phone_numbers.append("not found")
-                        websites.append("not found")
-                else:
-                    print("Error: Response JSON is None")
-                    phone_numbers.append("not found")
-                    websites.append("not found")
-            except ValueError as ve:
-                print(f"Error decoding JSON: {ve}")
-                print(f"Response content: {response.content}")
-                phone_numbers.append("not found")
-                websites.append("not found")
+            data = response.json()
+            task_status_code = data["tasks"][0]["status_code"]
+            if task_status_code == 40102:
+                print("Sem resultado de busca")
+                phone_numbers.append("Sem resultado de busca")
+                websites.append("Sem resultado de busca")
+            if task_status_code == 20000:
+                phone_number = data["tasks"][0]["result"][0]["items"][0]["phone"]
+                website_url = data["tasks"][0]["result"][0]["items"][0]["url"]
+                print(f"Numero encontrado: {phone_number}")
+                print(f"Site encontrado: {website_url}")
+                phone_numbers.append(phone_number)
+                websites.append(website_url)
         else:
             print(f"Error: HTTP status code {response.status_code}")
             phone_numbers.append("not found")
