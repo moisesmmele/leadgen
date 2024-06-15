@@ -191,7 +191,8 @@ columns_to_drop = [
 cnpj_df = cnpj_df.drop(columns=columns_to_drop)
 
 phone_numbers = []
-has_websites = []
+websites = []
+
 valida_info = input("Deseja validar informações? (S ou N): ")
 if valida_info == "S":
     for index, row in cnpj_df.iterrows():
@@ -203,30 +204,37 @@ if valida_info == "S":
             "language_code": "pt-BR",
         }
         response = requests.post(api_url, headers=headers, json=[payload_dict])
-        print(response.text)
         if response.status_code == 200:
-            data = response.json()
-            if "items" in data and len(data["items"]) > 0:
-                item = data["items"][0]
-                phone_number = item.get("phone", "Telefone não encontrado")
-                website_url = item.get("url", "Website não encontrado")
-
-                phone_numbers.append(phone_number)
-                has_websites.append(1 if website_url else 0)
-
-            else:
-                phone_numbers.append("Não encontrado")
-                has_websites.append(0)
-
+            try:
+                data = response.json()
+                if data is not None:
+                    try:
+                        phone_number = data["tasks"][0]["result"][0]["items"][0]["phone"]
+                        website_url = data["tasks"][0]["result"][0]["items"][0]["url"]
+                        print(phone_number)
+                        print(website_url)
+                        phone_numbers.append(phone_number)
+                        websites.append(website_url)
+                    except (KeyError, IndexError) as e:
+                        print(f"Error accessing data structure: {e}")
+                        phone_numbers.append("not found")
+                        websites.append("not found")
+                else:
+                    print("Error: Response JSON is None")
+                    phone_numbers.append("not found")
+                    websites.append("not found")
+            except ValueError as ve:
+                print(f"Error decoding JSON: {ve}")
+                print(f"Response content: {response.content}")
+                phone_numbers.append("not found")
+                websites.append("not found")
         else:
-            print(
-                f"Erro na requisição para a keyword: {keyword}. Status Code: {response.status_code}"
-            )
-            phone_numbers.append("Erro na requisição")
-            has_websites.append(0)
+            print(f"Error: HTTP status code {response.status_code}")
+            phone_numbers.append("not found")
+            websites.append("not found")
 
     cnpj_df["numero_valido"] = phone_numbers
-    cnpj_df["tem_site"] = has_websites
+    cnpj_df["site"] = websites
 
 print("Salvando planila em XLSX...")
 
