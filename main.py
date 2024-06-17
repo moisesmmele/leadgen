@@ -190,10 +190,16 @@ columns_to_drop = [
 ]
 cnpj_df = cnpj_df.drop(columns=columns_to_drop)
 
-phone_numbers = []
-websites = []
+tem_gmb = []
+numeros = []
+sites = []
+categorias = []
+descricoes = []
+titulos = []
+enderecos = []
 
-valida_info = input("Deseja validar informações? (S ou N): ")
+
+valida_info = input("Deseja buscar informações? (S ou N): ")
 if valida_info == "S":
     for index, row in cnpj_df.iterrows():
         keyword = row["nome_fantasia_4"]
@@ -209,23 +215,48 @@ if valida_info == "S":
             data = response.json()
             task_status_code = data["tasks"][0]["status_code"]
             if task_status_code == 40102:
+                tem_gmb.append("N")
                 print("Sem resultado de busca")
-                phone_numbers.append("Sem resultado de busca")
-                websites.append("Sem resultado de busca")
+                numeros.append("Sem resultado de busca")
+                sites.append("Sem resultado de busca")
+                categorias.append("Sem resultado de busca")
+                descricoes.append("Sem resultado de busca")
+                titulos.append("Sem resultados de busca")
+                enderecos.append("Sem resultados de busca")
             if task_status_code == 20000:
-                phone_number = data["tasks"][0]["result"][0]["items"][0]["phone"]
-                website_url = data["tasks"][0]["result"][0]["items"][0]["url"]
-                print(f"Numero encontrado: {phone_number}")
-                print(f"Site encontrado: {website_url}")
-                phone_numbers.append(phone_number)
-                websites.append(website_url)
+                numero = data["tasks"][0]["result"][0]["items"][0]["phone"]
+                site = data["tasks"][0]["result"][0]["items"][0]["url"]
+                categoria = data["tasks"][0]["result"][0]["items"][0]["category"]
+                descricao = data["tasks"][0]["result"][0]["items"][0]["description"]
+                titulo = data["tasks"][0]["result"][0]["items"][0]["title"]
+                endereco = data["tasks"][0]["result"][0]["items"][0]["address"]
+                print(f"Titulo encontrado: {titulo}")
+                print(f"Categoria encontrada: {categoria}")
+                print(f"Descrição encontrada: {descricao}")
+                print(f"Endereço encontrado: {endereco}")
+                print(f"Numero encontrado: {numero}")
+                print(f"Site encontrado: {site}")
+                numeros.append(numero)
+                sites.append(site)
+                categorias.append(categoria)
+                descricoes.append(descricao)
+                titulos.append(titulo)
+                enderecos.append(endereco)
         else:
             print(f"Error: HTTP status code {response.status_code}")
-            phone_numbers.append("not found")
-            websites.append("not found")
+            numeros.append("not found")
+            sites.append("not found")
+            categorias.append("not found")
+            descricoes.append("not found")
+            titulos.append("not found")
+            enderecos.append("not found")
 
-    cnpj_df["numero_valido"] = phone_numbers
-    cnpj_df["site"] = websites
+    cnpj_df["titulos_gmb"] = titulos
+    cnpj_df["categoria_gmb"] = categorias
+    cnpj_df["descricao_gmb"] = descricoes
+    cnpj_df["endereco_gmb"] = enderecos
+    cnpj_df["numero_valido_gmb"] = numeros
+    cnpj_df["site_gmb"] = sites
 
 print("Salvando planila em XLSX...")
 
