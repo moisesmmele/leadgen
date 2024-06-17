@@ -6,6 +6,9 @@ import requests
 import json
 import os
 
+cotacao_dolar = 5.36
+custo_api_call = 0.0054
+
 api_url = "https://api.dataforseo.com/v3/business_data/google/my_business_info/live"
 
 auth_key = os.environ.get("DATAFORSEO_API_KEY")
@@ -190,17 +193,20 @@ columns_to_drop = [
 ]
 cnpj_df = cnpj_df.drop(columns=columns_to_drop)
 
-tem_gmb = []
-numeros = []
-sites = []
-categorias = []
-descricoes = []
-titulos = []
-enderecos = []
-
-
+contagem_linhas = cnpj_df.shape[0]
+custo_busca_USD = round(contagem_linhas * custo_api_call, 2)
+custo_busca_BRL = round(custo_busca_USD * cotacao_dolar, 2)
+print(f"Estabelecimentos encontrados: {contagem_linhas}")
+print(f"Custo estimado: USD {custo_busca_USD} | BRL {custo_busca_BRL}")
 valida_info = input("Deseja buscar informações? (S ou N): ")
 if valida_info == "S":
+    tem_gmb = []
+    numeros = []
+    sites = []
+    categorias = []
+    descricoes = []
+    titulos = []
+    enderecos = []
     for index, row in cnpj_df.iterrows():
         keyword = row["nome_fantasia_4"]
         print("buscando para: " + keyword)
@@ -236,6 +242,7 @@ if valida_info == "S":
                 print(f"Endereço encontrado: {endereco}")
                 print(f"Numero encontrado: {numero}")
                 print(f"Site encontrado: {site}")
+                tem_gmb.append("S")
                 numeros.append(numero)
                 sites.append(site)
                 categorias.append(categoria)
@@ -244,6 +251,7 @@ if valida_info == "S":
                 enderecos.append(endereco)
         else:
             print(f"Error: HTTP status code {response.status_code}")
+            tem_gmb.append("not found")
             numeros.append("not found")
             sites.append("not found")
             categorias.append("not found")
@@ -251,6 +259,7 @@ if valida_info == "S":
             titulos.append("not found")
             enderecos.append("not found")
 
+    cnpj_df["tem_gmb"] = tem_gmb
     cnpj_df["titulos_gmb"] = titulos
     cnpj_df["categoria_gmb"] = categorias
     cnpj_df["descricao_gmb"] = descricoes
