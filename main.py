@@ -6,8 +6,13 @@ import requests
 import json
 import os
 
-cotacao_dolar = 5.36
+url_api_dolar = "https://economia.awesomeapi.com.br/last/USD-BRL"
+api_dolar = requests.get(url_api_dolar)
+dolar_data = api_dolar.json()
+
+cotacao_dolar = dolar_data["USDBRL"]["ask"]
 custo_api_call = 0.0054
+
 
 api_url = "https://api.dataforseo.com/v3/business_data/google/my_business_info/live"
 
