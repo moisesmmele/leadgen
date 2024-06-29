@@ -10,7 +10,7 @@ url_api_dolar = "https://economia.awesomeapi.com.br/last/USD-BRL"
 api_dolar = requests.get(url_api_dolar)
 dolar_data = api_dolar.json()
 
-cotacao_dolar = dolar_data["USDBRL"]["ask"]
+cotacao_dolar = float(dolar_data["USDBRL"]["ask"])
 custo_api_call = 0.0054
 
 
